@@ -28,13 +28,43 @@ const miniMetrics = [
   ["Queued plans", "3 ready"],
 ];
 
+const lanes = [
+  {
+    id: "lane-access",
+    title: "Access & edge",
+    subtitle: "How users enter and authenticate into the platform.",
+  },
+  {
+    id: "lane-control",
+    title: "Control plane",
+    subtitle: "Where orchestration, health, and automation decisions are made.",
+  },
+  {
+    id: "lane-compute",
+    title: "Compute fabric",
+    subtitle: "Where stable services, tenant workloads, and worker pools live.",
+  },
+  {
+    id: "lane-data",
+    title: "Data & resilience",
+    subtitle: "Where backups, artifacts, and recovery posture are kept visible.",
+  },
+];
+
+const flow = [
+  "Users reach the edge",
+  "Identity and policy are enforced",
+  "Claw plans and coordinates",
+  "Compute executes workloads",
+  "Backup and storage protect the platform",
+];
+
 const nodes = [
   {
     id: "edge",
+    lane: "lane-access",
     tier: "edge",
     name: "orch-edge-1",
-    x: 50,
-    y: 12,
     status: "healthy",
     summary: "TLS termination, DNS routing, and public ingress into the private cloud.",
     chips: ["Anycast DNS", "TLS", "WAF"],
@@ -49,14 +79,12 @@ const nodes = [
       alerts: "0 critical",
       domains: "18 mapped",
     },
-    connections: ["identity", "claw-core", "pve-a"],
   },
   {
     id: "identity",
+    lane: "lane-access",
     tier: "identity",
     name: "identity-gateway",
-    x: 20,
-    y: 32,
     status: "healthy",
     summary: "SSO, MFA, tenant accounts, and service-level access control.",
     chips: ["OIDC", "MFA", "RBAC"],
@@ -71,14 +99,12 @@ const nodes = [
       policy: "RBAC enabled",
       auth: "OIDC + local",
     },
-    connections: ["edge", "claw-core", "metrics"],
   },
   {
     id: "claw-core",
+    lane: "lane-control",
     tier: "automation",
     name: "claw-core",
-    x: 50,
-    y: 33,
     status: "healthy",
     summary: "The fictional operations brain, hosted inside a VPS and coordinating plans, health checks, and orchestration.",
     chips: ["Agent core", "Planning", "Scheduling"],
@@ -93,15 +119,13 @@ const nodes = [
       drift: "low",
       windows: "2 scheduled",
     },
-    connections: ["edge", "identity", "pve-a", "pve-b", "backup", "metrics", "object-store"],
     primary: true,
   },
   {
     id: "metrics",
+    lane: "lane-control",
     tier: "observability",
     name: "metrics-core",
-    x: 80,
-    y: 32,
     status: "warning",
     summary: "Metrics, logs, traces, and alerts for the entire fictional private cloud.",
     chips: ["Grafana", "Prometheus", "Loki"],
@@ -116,14 +140,12 @@ const nodes = [
       alerts: "2 warning",
       logging: "centralized",
     },
-    connections: ["identity", "claw-core", "pve-b", "backup"],
   },
   {
     id: "pve-a",
+    lane: "lane-compute",
     tier: "compute",
     name: "orch-pve-a",
-    x: 32,
-    y: 58,
     status: "healthy",
     summary: "Primary compute domain for stable infrastructure services and core LXCs.",
     chips: ["LXC heavy", "Core apps", "ZFS"],
@@ -138,14 +160,12 @@ const nodes = [
       memory: "58%",
       storage: "3.8 TB ZFS",
     },
-    connections: ["edge", "claw-core", "backup", "object-store"],
   },
   {
     id: "pve-b",
+    lane: "lane-compute",
     tier: "compute",
     name: "orch-pve-b",
-    x: 68,
-    y: 58,
     status: "healthy",
     summary: "Secondary compute domain for tenant workloads, burst jobs, and future K3s nodes.",
     chips: ["Worker pool", "Tenant apps", "Burst"],
@@ -160,14 +180,12 @@ const nodes = [
       memory: "52%",
       queue: "moderate",
     },
-    connections: ["claw-core", "metrics", "backup", "object-store"],
   },
   {
     id: "backup",
+    lane: "lane-data",
     tier: "resilience",
     name: "orch-backup-1",
-    x: 22,
-    y: 82,
     status: "healthy",
     summary: "Backup retention, restore validation, and immutable checkpoint strategy.",
     chips: ["PBS", "Restore tests", "Retention"],
@@ -182,14 +200,12 @@ const nodes = [
       restore: "weekly",
       offsite: "enabled",
     },
-    connections: ["claw-core", "pve-a", "pve-b", "metrics"],
   },
   {
     id: "object-store",
+    lane: "lane-data",
     tier: "storage",
     name: "object-store",
-    x: 78,
-    y: 82,
     status: "healthy",
     summary: "S3-style object storage for artifacts, logs, snapshots, and tenant assets.",
     chips: ["S3 API", "Artifacts", "Versioning"],
@@ -204,7 +220,6 @@ const nodes = [
       used: "2.1 TB",
       replication: "planned",
     },
-    connections: ["claw-core", "pve-a", "pve-b"],
   },
 ];
 
@@ -251,8 +266,8 @@ const tenants = [
 
 const statsGrid = document.getElementById("services");
 const miniMetricsEl = document.getElementById("mini-metrics");
-const topologyCanvas = document.getElementById("topology-canvas");
-const connectionLayer = document.querySelector(".connection-layer");
+const topologyGrid = document.getElementById("topology-grid");
+const topologyFlow = document.getElementById("topology-flow");
 const detailTitle = document.getElementById("detail-title");
 const detailSummary = document.getElementById("detail-summary");
 const detailList = document.getElementById("detail-list");
@@ -304,49 +319,60 @@ function setActiveNode(id) {
   detailList.innerHTML = node.details.map((item) => `<li>${item}</li>`).join("");
   detailMetrics.innerHTML = metricMarkup(node.metrics);
 
-  topologyCanvas.querySelectorAll(".node-button").forEach((button) => {
+  topologyGrid.querySelectorAll(".node-button").forEach((button) => {
     button.classList.toggle("active", button.dataset.id === node.id);
   });
 }
 
-function renderNodes() {
-  nodes.forEach((node) => {
-    const button = document.createElement("button");
-    button.className = "node-button";
-    button.dataset.id = node.id;
-    button.style.left = `${node.x}%`;
-    button.style.top = `${node.y}%`;
-    button.innerHTML = `
-      <span class="node-tier">${node.tier}</span>
-      <div class="node-name">${node.name}</div>
-      <p class="node-summary">${node.summary}</p>
-      <div class="node-chip-row">${node.chips.map((chip) => `<span class="node-chip">${chip}</span>`).join("")}</div>
-    `;
-    button.addEventListener("click", () => setActiveNode(node.id));
-    topologyCanvas.appendChild(button);
-  });
+function renderTopologyFlow() {
+  topologyFlow.innerHTML = flow
+    .map(
+      (step, index) => `
+      <div class="flow-step">
+        <span class="flow-index">0${index + 1}</span>
+        <span class="flow-text">${step}</span>
+      </div>
+    `,
+    )
+    .join("");
 }
 
-function drawConnections() {
-  connectionLayer.innerHTML = "";
-  const seen = new Set();
+function renderTopologyGrid() {
+  topologyGrid.innerHTML = lanes
+    .map((lane) => {
+      const laneNodes = nodes
+        .filter((node) => node.lane === lane.id)
+        .map(
+          (node) => `
+          <button class="node-button ${node.primary ? "node-primary" : ""}" data-id="${node.id}">
+            <div class="node-card-header">
+              <span class="node-tier">${node.tier}</span>
+              <span class="node-state state-${node.status}">${node.status}</span>
+            </div>
+            <div class="node-name">${node.name}</div>
+            <p class="node-summary">${node.summary}</p>
+            <div class="node-chip-row">${node.chips.map((chip) => `<span class="node-chip">${chip}</span>`).join("")}</div>
+          </button>
+        `,
+        )
+        .join("");
 
-  nodes.forEach((node) => {
-    node.connections.forEach((targetId) => {
-      const key = [node.id, targetId].sort().join("::");
-      if (seen.has(key)) return;
-      seen.add(key);
+      return `
+        <section class="topology-lane">
+          <header class="lane-header">
+            <p class="eyebrow">${lane.title}</p>
+            <p class="lane-summary">${lane.subtitle}</p>
+          </header>
+          <div class="lane-stack">
+            ${laneNodes}
+          </div>
+        </section>
+      `;
+    })
+    .join("");
 
-      const target = nodes.find((entry) => entry.id === targetId);
-      if (!target) return;
-
-      const midY = (node.y + target.y) / 2;
-      const d = `M ${node.x * 10} ${node.y * 6.2} C ${node.x * 10} ${midY * 6.2}, ${target.x * 10} ${midY * 6.2}, ${target.x * 10} ${target.y * 6.2}`;
-      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", d);
-      if (node.primary || target.primary) path.setAttribute("class", "primary");
-      connectionLayer.appendChild(path);
-    });
+  topologyGrid.querySelectorAll(".node-button").forEach((button) => {
+    button.addEventListener("click", () => setActiveNode(button.dataset.id));
   });
 }
 
@@ -385,9 +411,8 @@ function renderTenants() {
 }
 
 renderStats();
-renderNodes();
-drawConnections();
+renderTopologyFlow();
+renderTopologyGrid();
 renderTimeline();
 renderTenants();
 setActiveNode("claw-core");
-window.addEventListener("resize", drawConnections);
