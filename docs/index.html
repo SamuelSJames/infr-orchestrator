@@ -6,7 +6,7 @@
     <title>Infr-Orchestrator</title>
     <meta
       name="description"
-      content="A visual private-cloud control plane concept for Proxmox-based home infrastructure."
+      content="A Proxmox cloud control plane for orchestrating compute, networking, storage, and automation-driven operations."
     />
     <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -23,121 +23,117 @@
         <div class="brand-lockup">
           <img src="./assets/favicon.svg" alt="Infr-Orchestrator logo" class="brand-icon" />
           <div>
-            <p class="eyebrow">Private cloud concept</p>
             <h1>Infr-Orchestrator</h1>
+            <p class="brand-subtitle">Proxmox-based infrastructure orchestration | automation-driven operations | private cloud platform</p>
           </div>
         </div>
         <nav class="topnav">
-          <a href="#topology">Topology</a>
-          <a href="#services">Services</a>
-          <a href="#tenants">Tenants</a>
-          <a href="https://github.com/SamuelSJames/infr-orchestrator" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="#overview" class="nav-pill active">Overview</a>
+          <a href="#topology" class="nav-pill">Topology</a>
+          <a href="#compute" class="nav-pill">Compute</a>
+          <a href="#storage" class="nav-pill">Storage</a>
+          <a href="#claw" class="nav-pill nav-pill-accent">Claw Automation Core</a>
+          <a href="#tenants" class="nav-pill">Tenants</a>
+          <a href="https://github.com/SamuelSJames/infr-orchestrator" target="_blank" rel="noreferrer" class="nav-pill">GitHub</a>
         </nav>
       </header>
 
       <main>
-        <section class="hero panel">
+        <section class="hero panel" id="overview">
           <div class="hero-copy">
-            <span class="pill">Proxmox inspired, tenant ready, fully fictionalized</span>
-            <h2>Design the private cloud you actually want to run at home.</h2>
-            <p>
-              Infr-Orchestrator is a visual control plane concept for a Proxmox-based home cloud. It brings
-              together compute, backup, ingress, observability, and automation in one topology-first dashboard,
-              with a fictional Claw core running as the operations brain inside a VPS.
-            </p>
-            <div class="hero-actions">
-              <a class="btn btn-primary" href="#topology">Explore the topology</a>
-              <a class="btn btn-secondary" href="https://github.com/SamuelSJames/infr-orchestrator" target="_blank" rel="noreferrer">Open the repo</a>
-            </div>
+            <h2>Infr-Orchestrator <span>|</span> Your Proxmox Cloud Control Plane</h2>
+            <p>Orchestrate compute, networking, storage, backups, and automation from a single operations surface.</p>
           </div>
-          <div class="hero-stack">
-            <article class="glass-card signal-card">
-              <div class="signal-row">
-                <span class="status-dot status-good"></span>
-                <strong>Automation core healthy</strong>
-              </div>
-              <p>Claw is actively routing maintenance plans, health checks, and self-service deploy workflows.</p>
-            </article>
-            <article class="glass-card mini-metrics" id="mini-metrics"></article>
-          </div>
-        </section>
-
-        <section class="stats-grid" id="services"></section>
-
-        <section class="panel topology-section" id="topology">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Topology view</p>
-              <h3>Ideal private-cloud network grid</h3>
-            </div>
-            <p>
-              Clearer by design, grouped into platform lanes so the whole stack reads fast without guessing where each system belongs.
-            </p>
-          </div>
-          <div class="topology-layout">
-            <div class="topology-grid-wrap">
-              <div class="topology-flow" id="topology-flow"></div>
-              <div class="topology-grid" id="topology-grid"></div>
-            </div>
-            <aside class="detail-panel glass-card" id="detail-panel">
-              <p class="eyebrow">Selected node</p>
-              <h4 id="detail-title">claw-core</h4>
-              <p id="detail-summary"></p>
-              <ul class="detail-list" id="detail-list"></ul>
-              <div class="detail-metrics" id="detail-metrics"></div>
-            </aside>
-          </div>
-        </section>
-
-        <section class="two-column-grid">
-          <article class="panel">
-            <div class="section-heading compact">
+          <aside class="brain-card" id="claw">
+            <div class="brain-card-header">
               <div>
-                <p class="eyebrow">Recent activity</p>
-                <h3>Operations stream</h3>
+                <p class="eyebrow">Claw automation brain</p>
+                <h3>Running process</h3>
+              </div>
+              <span class="status-badge good">100% active</span>
+            </div>
+            <div class="brain-core">
+              <div class="brain-icon-wrap">
+                <img src="./assets/favicon.svg" alt="Claw Core" class="brain-icon" />
+              </div>
+              <div>
+                <strong>VPS / automation node</strong>
+                <p>Monitoring operations, preparing maintenance plans, and coordinating private-cloud workflows.</p>
               </div>
             </div>
-            <div class="timeline" id="timeline"></div>
+            <div class="brain-footer">
+              <span>Monitoring operations...</span>
+              <span>control node</span>
+            </div>
+          </aside>
+        </section>
+
+        <section class="stats-row" id="summary-stats"></section>
+
+        <section class="panel topology-panel" id="topology">
+          <div class="section-bar">
+            <div>
+              <p class="eyebrow">Topology</p>
+              <h3>Infrastructure Topology (Grid-Based View)</h3>
+            </div>
+          </div>
+          <div class="topology-columns" id="topology-columns"></div>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="panel data-panel">
+            <div class="section-bar compact">
+              <div>
+                <p class="eyebrow">Operations</p>
+                <h3>Recent Operations</h3>
+              </div>
+            </div>
+            <div class="list-stack" id="recent-ops"></div>
           </article>
 
-          <article class="panel" id="tenants">
-            <div class="section-heading compact">
+          <article class="panel data-panel" id="tenants">
+            <div class="section-bar compact">
               <div>
-                <p class="eyebrow">Tenant concepts</p>
-                <h3>Self-service, without losing control</h3>
+                <p class="eyebrow">Workloads</p>
+                <h3>Tenant Workloads</h3>
               </div>
             </div>
-            <div class="tenant-grid" id="tenant-grid"></div>
+            <div class="workload-chart" id="workload-chart"></div>
           </article>
-        </section>
 
-        <section class="panel roadmap-panel">
-          <div class="section-heading compact">
-            <div>
-              <p class="eyebrow">Roadmap</p>
-              <h3>What this concept becomes next</h3>
+          <article class="panel data-panel" id="compute">
+            <div class="section-bar compact">
+              <div>
+                <p class="eyebrow">Compute</p>
+                <h3>Compute Inventory (PVE Nodes)</h3>
+              </div>
             </div>
-          </div>
-          <div class="roadmap-grid">
-            <article class="roadmap-card">
-              <h4>Phase 1</h4>
-              <p>Topology dashboard, automation core, backup posture, and a strong visual language.</p>
-            </article>
-            <article class="roadmap-card">
-              <h4>Phase 2</h4>
-              <p>Interactive compute inventory, project quotas, self-service deployment forms, and richer tenant views.</p>
-            </article>
-            <article class="roadmap-card">
-              <h4>Phase 3</h4>
-              <p>Live API-backed views, role-based auth, workload plans, and a real private-cloud operator workflow.</p>
-            </article>
-          </div>
+            <div class="inventory-table-wrap">
+              <table class="inventory-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Storage</th>
+                    <th>Statistics</th>
+                  </tr>
+                </thead>
+                <tbody id="inventory-table"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel data-panel" id="storage">
+            <div class="section-bar compact">
+              <div>
+                <p class="eyebrow">Automation</p>
+                <h3>Automation Status Log</h3>
+              </div>
+            </div>
+            <div class="log-stack" id="automation-log"></div>
+          </article>
         </section>
       </main>
-
-      <footer class="footer-note">
-        <p>Built as a portfolio-grade concept for a Proxmox-powered home cloud. No real infrastructure details are exposed.</p>
-      </footer>
     </div>
 
     <script src="./app.js"></script>
