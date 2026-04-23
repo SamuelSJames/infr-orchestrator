@@ -46,8 +46,10 @@ python3 -m http.server 8080
 Open:
 
 ```text
-http://127.0.0.1:8080/docs/
+http://127.0.0.1:8080/
 ```
+
+The repo root redirects to `docs/`, so both `/` and `/docs/` work.
 
 ---
 
@@ -63,18 +65,26 @@ Point your site root to:
 infr-orchestrator/docs/
 ```
 
-### Caddy
-Minimal example:
+Reference example:
 
-```caddy
-example.yourdomain.com {
-    root * /opt/infr-orchestrator/docs
-    file_server
-}
+```text
+deploy/nginx.conf.example
+```
+
+### Caddy
+Reference example:
+
+```text
+deploy/Caddyfile.example
 ```
 
 ### Docker
-Use a simple static Nginx image and mount `docs/` into the container.
+A minimal `Dockerfile` is included. Build and run:
+
+```bash
+docker build -t infr-orchestrator .
+docker run --rm -p 8080:80 infr-orchestrator
+```
 
 ---
 
@@ -83,7 +93,7 @@ Use a simple static Nginx image and mount `docs/` into the container.
 Current dashboard content lives in:
 
 ```text
-docs/app.js
+docs/data.js
 ```
 
 Update these sections:
@@ -214,10 +224,16 @@ Even before adding an API, write down:
 
 A good next path is:
 
-1. move dashboard data from `app.js` into a separate data file
-2. generate that file from your Proxmox inventory
-3. add a lightweight backend
-4. connect to Proxmox API
-5. wire in health and backup results automatically
+1. generate `docs/data.js` from your Proxmox inventory
+2. add a lightweight backend if you need live data
+3. connect to Proxmox API
+4. wire in health and backup results automatically
+5. keep the static fallback mode intact
+
+See also:
+
+- `docs/DEPLOYMENT.md`
+- `docs/DEVELOPMENT.md`
+- `docs/INTEGRATIONS.md`
 
 That preserves the current visual design while making it operational.

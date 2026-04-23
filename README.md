@@ -64,12 +64,22 @@ The current repo is UI-first, but it is structured to grow into a fuller open-so
 ```text
 infr-orchestrator/
 ├── README.md
+├── CONTRIBUTING.md
 ├── LICENSE
+├── Dockerfile
+├── index.html
+├── deploy/
+│   ├── Caddyfile.example
+│   └── nginx.conf.example
 ├── docs/
 │   ├── index.html
 │   ├── styles.css
+│   ├── data.js
 │   ├── app.js
 │   ├── SETUP.md
+│   ├── DEPLOYMENT.md
+│   ├── DEVELOPMENT.md
+│   ├── INTEGRATIONS.md
 │   ├── ARCHITECTURE.md
 │   └── assets/
 │       ├── favicon.svg
@@ -122,9 +132,10 @@ cd infr-orchestrator
 python3 -m http.server 8080
 ```
 
-Then open:
+Then open either:
 
-<http://127.0.0.1:8080/docs/>
+- <http://127.0.0.1:8080/>
+- <http://127.0.0.1:8080/docs/>
 
 ## Deployment options
 
@@ -132,21 +143,21 @@ Then open:
 This repo already supports GitHub Pages from the `docs/` directory.
 
 ### 2. Nginx
-Copy the repo to a server and point Nginx at `docs/`.
+Copy the repo to a server, point Nginx at `docs/`, and use `deploy/nginx.conf.example` as a starting point.
 
 ### 3. Caddy
-Serve `docs/` as a static site and let Caddy handle HTTPS.
+Serve `docs/` as a static site and use `deploy/Caddyfile.example` as a starting point.
 
 ### 4. Docker + static web server
-Wrap `docs/` with a minimal Nginx or Caddy container.
+A minimal `Dockerfile` is included for portable static deployment.
 
 ## How to customize for your own Proxmox environment
 
 Right now the dashboard data is stored in:
 
-- `docs/app.js`
+- `docs/data.js`
 
-To adapt the dashboard to your own environment, update the arrays for:
+To adapt the dashboard to your own environment, update the data structures for:
 
 - stats
 - topology rows
@@ -170,7 +181,7 @@ This makes the project easy to fork and personalize without needing a backend fi
 ### Phase 2, generated data
 - export data from Proxmox API
 - build a script that writes dashboard JSON or JS data
-- generate `app.js` or a separate data file from your inventory
+- generate `docs/data.js` or a separate data file from your inventory
 
 ### Phase 3, live platform
 - add a backend API
@@ -227,15 +238,18 @@ This makes the project easy to fork and personalize without needing a backend fi
 ## Documentation
 
 - [Setup Guide](./docs/SETUP.md)
+- [Deployment Guide](./docs/DEPLOYMENT.md)
+- [Development Guide](./docs/DEVELOPMENT.md)
+- [Integration Guide](./docs/INTEGRATIONS.md)
 - [Architecture Guide](./docs/ARCHITECTURE.md)
+- [Contributing Guide](./CONTRIBUTING.md)
 
 ## Roadmap
 
-- split dashboard data into a separate config/data file
-- add richer asset/icon set
-- add sample docker deployment
-- add live Proxmox API integration path
 - add generated inventory workflow
+- add optional live Proxmox API integration path
+- add PBS, Grafana, and Uptime Kuma adapter examples
+- add schema validation for generated data
 - add role-aware operator actions
 
 ## License

@@ -1,0 +1,5 @@
+example.yourdomain.com {
+    root * /opt/infr-orchestrator/docs
+    encode zstd gzip
+    file_server
+}

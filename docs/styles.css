@@ -105,8 +105,8 @@ h3 {
 }
 
 .brand-icon {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   flex: 0 0 auto;
   object-fit: contain;
 }
@@ -267,14 +267,15 @@ h3 {
 }
 
 .stat-icon {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
   display: grid;
   place-items: center;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   background: rgba(255, 255, 255, 0.05);
   overflow: hidden;
+  padding: 6px;
 }
 
 .stat-icon img {
@@ -471,17 +472,18 @@ h3 {
 
 .topology-label {
   border-radius: 12px;
-  padding: 14px;
+  padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-weight: 700;
+  line-height: 1.15;
 }
 
 .topology-label-icon {
-  width: 22px;
-  height: 22px;
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -674,6 +676,21 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .topology-track {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    overflow: visible;
+  }
+
+  .topology-node {
+    min-width: 0;
+  }
+
+  .topology-arrow {
+    display: none;
+  }
+
   .health-ring,
   .backup-ring {
     width: 140px;
@@ -688,5 +705,41 @@ h3 {
   .backup-ring-inner {
     width: 96px;
     height: 96px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    width: min(calc(100% - 12px), 1600px);
+    padding: 6px 0 18px;
+  }
+
+  .topbar,
+  .automation-card,
+  .health-panel,
+  .topology-panel,
+  .lower-panel,
+  .hero-panel,
+  .stat-card {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .brand-icon {
+    width: 46px;
+    height: 46px;
+  }
+
+  .topology-label {
+    padding: 14px;
+  }
+
+  .topology-label-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .topology-track {
+    grid-template-columns: 1fr;
   }
 }
