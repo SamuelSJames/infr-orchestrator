@@ -6,7 +6,7 @@
     <title>Infr-Orchestrator</title>
     <meta
       name="description"
-      content="A Proxmox cloud control plane for orchestrating compute, networking, storage, and automation-driven operations."
+      content="Proxmox-based infrastructure orchestration, automation-driven operations, and private cloud observability."
     />
     <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -24,113 +24,166 @@
           <img src="./assets/favicon.svg" alt="Infr-Orchestrator logo" class="brand-icon" />
           <div>
             <h1>Infr-Orchestrator</h1>
-            <p class="brand-subtitle">Proxmox-based infrastructure orchestration | automation-driven operations | private cloud platform</p>
+            <p class="brand-subtitle">Proxmox-based infrastructure orchestration · automation-driven operations · private cloud platform</p>
           </div>
         </div>
         <nav class="topnav">
-          <a href="#overview" class="nav-pill active">Overview</a>
-          <a href="#topology" class="nav-pill">Topology</a>
-          <a href="#compute" class="nav-pill">Compute</a>
-          <a href="#storage" class="nav-pill">Storage</a>
-          <a href="#claw" class="nav-pill nav-pill-accent">Claw Automation Core</a>
-          <a href="#tenants" class="nav-pill">Tenants</a>
-          <a href="https://github.com/SamuelSJames/infr-orchestrator" target="_blank" rel="noreferrer" class="nav-pill">GitHub</a>
+          <a class="nav-pill active" href="#overview">Overview</a>
+          <a class="nav-pill" href="#topology">Topology</a>
+          <a class="nav-pill" href="#compute">Compute</a>
+          <a class="nav-pill" href="#storage">Storage</a>
+          <a class="nav-pill" href="#automation">Automation</a>
+          <a class="nav-pill" href="#tenants">Tenants</a>
+          <a class="nav-pill" href="https://github.com/SamuelSJames/infr-orchestrator" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
+        <div class="system-status-pill">
+          <span class="status-dot"></span>
+          <div>
+            <strong>System Status</strong>
+            <span>All systems operational</span>
+          </div>
+        </div>
       </header>
 
       <main>
-        <section class="hero panel" id="overview">
-          <div class="hero-copy">
-            <h2>Infr-Orchestrator <span>|</span> Your Proxmox Cloud Control Plane</h2>
-            <p>Orchestrate compute, networking, storage, backups, and automation from a single operations surface.</p>
-          </div>
-          <aside class="brain-card" id="claw">
-            <div class="brain-card-header">
+        <section class="overview-grid" id="overview">
+          <article class="hero-panel panel">
+            <div class="hero-glow"></div>
+            <p class="eyebrow">Infrastructure control plane</p>
+            <h2>Infrastructure. Automated.</h2>
+            <h3>Reliably orchestrated. Always observable.</h3>
+            <p class="hero-copy">
+              Infr-Orchestrator is a Proxmox-powered private cloud platform designed for automation,
+              resilience, tenant isolation, and full-stack observability.
+            </p>
+          </article>
+          <section class="stats-grid" id="stats-grid"></section>
+        </section>
+
+        <section class="core-grid">
+          <article class="panel automation-card" id="automation">
+            <div class="panel-heading">
               <div>
-                <p class="eyebrow">Claw automation brain</p>
-                <h3>Running process</h3>
+                <p class="eyebrow">Claw Automation Core</p>
+                <h3>Automation brain</h3>
               </div>
-              <span class="status-badge good">100% active</span>
+              <span class="mini-chip">Running</span>
             </div>
-            <div class="brain-core">
-              <div class="brain-icon-wrap">
+            <div class="brain-visual-wrap">
+              <div class="brain-visual">
                 <img src="./assets/favicon.svg" alt="Claw Core" class="brain-icon" />
               </div>
-              <div>
-                <strong>VPS / automation node</strong>
-                <p>Monitoring operations, preparing maintenance plans, and coordinating private-cloud workflows.</p>
+              <div class="brain-copy">
+                <p>
+                  Claw is the automation brain of the platform, running inside a hardened VPS
+                  control node and coordinating operations across the stack.
+                </p>
               </div>
             </div>
-            <div class="brain-footer">
-              <span>Monitoring operations...</span>
-              <span>control node</span>
+            <div class="metric-list" id="core-metrics"></div>
+            <a class="primary-button" href="https://github.com/SamuelSJames/infr-orchestrator" target="_blank" rel="noreferrer">Open Automation Hub</a>
+          </article>
+
+          <article class="panel topology-panel" id="topology">
+            <div class="panel-heading panel-heading-spread">
+              <div>
+                <p class="eyebrow">Infrastructure Topology</p>
+                <h3>Grid-based platform map</h3>
+              </div>
+              <a class="panel-link" href="#">View Full Topology</a>
             </div>
-          </aside>
+            <div class="topology-rows" id="topology-rows"></div>
+          </article>
+
+          <article class="panel health-panel" id="storage">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">System Health</p>
+                <h3>Overall posture</h3>
+              </div>
+            </div>
+            <div class="health-ring-wrap">
+              <div class="health-ring">
+                <div class="health-ring-inner">
+                  <strong>98%</strong>
+                  <span>Healthy</span>
+                </div>
+              </div>
+            </div>
+            <div class="health-list" id="health-list"></div>
+          </article>
         </section>
 
-        <section class="stats-row" id="summary-stats"></section>
-
-        <section class="panel topology-panel" id="topology">
-          <div class="section-bar">
-            <div>
-              <p class="eyebrow">Topology</p>
-              <h3>Infrastructure Topology (Grid-Based View)</h3>
-            </div>
-          </div>
-          <div class="topology-columns" id="topology-columns"></div>
-        </section>
-
-        <section class="dashboard-grid">
-          <article class="panel data-panel">
-            <div class="section-bar compact">
+        <section class="lower-grid">
+          <article class="panel lower-panel">
+            <div class="panel-heading panel-heading-spread">
               <div>
-                <p class="eyebrow">Operations</p>
-                <h3>Recent Operations</h3>
+                <p class="eyebrow">Recent Operations</p>
+                <h3>Execution feed</h3>
               </div>
+              <a class="panel-link" href="#">View All</a>
             </div>
-            <div class="list-stack" id="recent-ops"></div>
+            <div class="ops-list" id="ops-list"></div>
           </article>
 
-          <article class="panel data-panel" id="tenants">
-            <div class="section-bar compact">
+          <article class="panel lower-panel" id="tenants">
+            <div class="panel-heading panel-heading-spread">
               <div>
-                <p class="eyebrow">Workloads</p>
-                <h3>Tenant Workloads</h3>
+                <p class="eyebrow">Tenant / Project Spaces</p>
+                <h3>Workload groups</h3>
               </div>
+              <a class="panel-link" href="#">View All</a>
             </div>
-            <div class="workload-chart" id="workload-chart"></div>
+            <div class="tenant-list" id="tenant-list"></div>
           </article>
 
-          <article class="panel data-panel" id="compute">
-            <div class="section-bar compact">
+          <article class="panel lower-panel">
+            <div class="panel-heading panel-heading-spread">
               <div>
-                <p class="eyebrow">Compute</p>
-                <h3>Compute Inventory (PVE Nodes)</h3>
+                <p class="eyebrow">Backup Posture</p>
+                <h3>Protection state</h3>
               </div>
+              <a class="panel-link" href="#">View All</a>
             </div>
-            <div class="inventory-table-wrap">
-              <table class="inventory-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Storage</th>
-                    <th>Statistics</th>
-                  </tr>
-                </thead>
-                <tbody id="inventory-table"></tbody>
-              </table>
+            <div class="backup-card-body">
+              <div class="backup-ring">
+                <div class="backup-ring-inner">
+                  <strong>100%</strong>
+                  <span>Protected</span>
+                </div>
+              </div>
+              <div class="backup-breakdown" id="backup-breakdown"></div>
+            </div>
+            <div class="backup-footer">
+              <span>Last Backup (All)</span>
+              <strong>2h ago</strong>
             </div>
           </article>
 
-          <article class="panel data-panel" id="storage">
-            <div class="section-bar compact">
+          <article class="panel lower-panel" id="compute">
+            <div class="panel-heading panel-heading-spread">
               <div>
-                <p class="eyebrow">Automation</p>
-                <h3>Automation Status Log</h3>
+                <p class="eyebrow">Compute Inventory</p>
+                <h3>PVE and workload estate</h3>
               </div>
+              <a class="panel-link" href="#">View All</a>
             </div>
-            <div class="log-stack" id="automation-log"></div>
+            <div class="inventory-list" id="inventory-list"></div>
+          </article>
+
+          <article class="panel lower-panel">
+            <div class="panel-heading panel-heading-spread">
+              <div>
+                <p class="eyebrow">Automation Status</p>
+                <h3>Workflow summary</h3>
+              </div>
+              <a class="panel-link" href="#">View All</a>
+            </div>
+            <div class="status-summary" id="status-summary"></div>
+            <div class="success-bar">
+              <div class="success-bar-fill"></div>
+            </div>
+            <div class="success-label">Success Rate <strong>100%</strong></div>
           </article>
         </section>
       </main>

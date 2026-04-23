@@ -1,196 +1,268 @@
 const stats = [
-  { label: "Nodes Online", value: "7", meta: "Cluster + service nodes", color: "blue" },
-  { label: "Protected Workloads", value: "24", meta: "Backed by restore policy", color: "purple" },
-  { label: "Backup Health", value: "100%", meta: "Last nightly run passed", color: "green" },
-  { label: "Active Projects", value: "5", meta: "Tenant and internal spaces", color: "amber" },
-  { label: "Automation Runs (24h)", value: "152", meta: "Planner and ops workflows", color: "cyan" },
-  { label: "Alerts", value: "0", meta: "No critical incidents", color: "red" },
+  { label: "Nodes Online", value: "12 / 14", sub: "85.7%", color: "blue", icon: "🟢", width: 86 },
+  { label: "Protected Workloads", value: "48", sub: "Healthy", color: "purple", icon: "🛡️", width: 92 },
+  { label: "Backup Health", value: "100%", sub: "All Good", color: "green", icon: "💾", width: 100 },
+  { label: "Active Projects", value: "8", sub: "+1 this week", color: "amber", icon: "✨", width: 74 },
+  { label: "Automation Runs", value: "127", sub: "Last 24h", color: "cyan", icon: "🤖", width: 88 },
+  { label: "Alerts", value: "2", sub: "See details", color: "red", icon: "🔔", width: 28 },
 ];
 
-const topologyColumns = [
+const coreMetrics = [
+  ["Status", "Running"],
+  ["Node", "claw-core"],
+  ["Uptime", "23d 14h 32m"],
+  ["Python Workers", "16"],
+  ["Tasks Queued", "3"],
+  ["Last Run", "2m ago"],
+];
+
+const topologyRows = [
   {
-    title: "Edge / Access",
+    label: "Edge / Access",
     color: "blue",
     icon: "🌐",
-    rows: [
-      [
-        { name: "Internet", role: "External entry", note: "User traffic" },
-        { name: "Edge Gateway", role: "Ingress + TLS", note: "Reverse proxy" },
-      ],
+    nodes: [
+      { name: "edge-gateway-1", role: "HAProxy / NGINX" },
+      { name: "edge-firewall", role: "OPNsense" },
+      { name: "reverse-proxy", role: "Traefik" },
+      { name: "Internet", role: "User entry" },
     ],
   },
   {
-    title: "Identity / Control Plane",
+    label: "Identity / Control Plane",
     color: "purple",
     icon: "🛡️",
-    rows: [[{ name: "Claw-Core", role: "Automation core", note: "Control node" }]],
-  },
-  {
-    title: "Compute Fabric",
-    color: "green",
-    icon: "🖥️",
-    rows: [
-      [{ name: "PVE-A", role: "Primary compute", note: "Virtualization node" }],
-      [{ name: "PVE-B", role: "Secondary compute", note: "Worker + tenant node" }],
+    nodes: [
+      { name: "auth-core", role: "Keycloak" },
+      { name: "claw-core", role: "Claw Automation Core (VPS Control Node)", primary: true },
+      { name: "secrets-vault", role: "Vault" },
+      { name: "dns-core", role: "AdGuard DNS" },
     ],
   },
   {
-    title: "Storage / Backup",
-    color: "amber",
-    icon: "🗄️",
-    rows: [[{ name: "Object-Store", role: "Artifacts + backups", note: "Storage core" }]],
+    label: "Compute Fabric",
+    color: "green",
+    icon: "🖥️",
+    nodes: [
+      { name: "pve-a", role: "Proxmox Node" },
+      { name: "pve-b", role: "Proxmox Node" },
+      { name: "pve-c", role: "Proxmox Node" },
+      { name: "worker-burst-1", role: "Worker Node" },
+      { name: "worker-burst-2", role: "Worker Node" },
+    ],
   },
   {
-    title: "Observability / Operations",
+    label: "Storage / Backup",
+    color: "amber",
+    icon: "🗄️",
+    nodes: [
+      { name: "ceph-storage", role: "Ceph Cluster" },
+      { name: "nfs-core", role: "NFS / SMB" },
+      { name: "backup-core", role: "Proxmox Backup" },
+      { name: "object-store", role: "S3 Compatible" },
+    ],
+  },
+  {
+    label: "Observability / Operations",
     color: "cyan",
     icon: "📊",
-    rows: [[{ name: "Metrics-Core", role: "Monitoring stack", note: "Operations node" }]],
+    nodes: [
+      { name: "metrics-core", role: "Prometheus" },
+      { name: "logs-core", role: "Loki" },
+      { name: "tracing-core", role: "Tempo" },
+      { name: "dashboard-core", role: "Grafana" },
+    ],
   },
+];
+
+const healthItems = [
+  ["Compute", "Healthy"],
+  ["Storage", "Healthy"],
+  ["Networking", "Healthy"],
+  ["Backup", "Healthy"],
+  ["Automation", "Healthy"],
+  ["Observability", "Healthy"],
 ];
 
 const operations = [
-  {
-    title: "Commit validated for tenant rollout",
-    sub: "Tenant workload plan staged and backup checkpoint confirmed.",
-    time: "13s ago",
-  },
-  {
-    title: "Maintenance batch prepared",
-    sub: "Automation grouped low-risk upgrades by recovery posture.",
-    time: "4m ago",
-  },
-  {
-    title: "Ingress route refreshed",
-    sub: "Edge policy reconciled with active projects and certificate state.",
-    time: "17m ago",
-  },
-  {
-    title: "Burst workers returned to standby",
-    sub: "Short-lived execution pool scaled back after queue completion.",
-    time: "43m ago",
-  },
+  ["VM Create: app-prod-01", "2m ago", "Success"],
+  ["Backup: pve-b", "8m ago", "Success"],
+  ["Playbook: update-workers", "15m ago", "Success"],
+  ["VM Start: db-staging-01", "18m ago", "Success"],
+  ["Backup Verify: ceph-storage", "32m ago", "Success"],
+  ["Cleanup: tmp-snapshots", "1h ago", "Success"],
 ];
 
-const workloads = [
-  { name: "Project Atlas", value: 78 },
-  { name: "Project Harbor", value: 62 },
-  { name: "Project Relay", value: 54 },
-  { name: "Internal Ops", value: 85 },
+const tenants = [
+  ["Platform", "Core platform services", "12 VMs", "24 Containers"],
+  ["DevOps", "CI/CD and developer tools", "6 VMs", "18 Containers"],
+  ["Media", "Media services and apps", "8 VMs", "12 Containers"],
+  ["HomeLab", "Personal workloads", "5 VMs", "10 Containers"],
+  ["Security", "Security and monitoring", "4 VMs", "6 Containers"],
+];
+
+const backupBreakdown = [
+  ["Successful", "48"],
+  ["Warning", "0"],
+  ["Failed", "0"],
+  ["Skipped", "0"],
 ];
 
 const inventory = [
-  { name: "PVE-A", type: "PVE-1", storage: "3.8 TB", stats: "0 running alerts", className: "health-good" },
-  { name: "PVE-B", type: "PVE-2", storage: "2.6 TB", stats: "0 running alerts", className: "health-good" },
-  { name: "Object-Store", type: "Storage", storage: "2.1 TB", stats: "Healthy replication plan", className: "health-good" },
-  { name: "Backup-Core", type: "PBS", storage: "4.7 TB", stats: "Restore tests green", className: "health-good" },
+  ["Proxmox Nodes", "3 / 3", "Online"],
+  ["Worker Nodes", "2 / 3", "Online"],
+  ["Virtual Machines", "36", "Running"],
+  ["LXC Containers", "28", "Running"],
+  ["Total vCPUs", "96", "Allocated"],
+  ["Total Memory", "384 GB", "Allocated"],
 ];
 
-const automationLog = [
-  { time: "10:22:27 AM", message: "Monitoring operations pipeline healthy.", sub: "100% active" },
-  { time: "10:33:23 AM", message: "Maintenance planner idle, no drift detected.", sub: "queue stable" },
-  { time: "10:44:09 AM", message: "Backup verification signals accepted.", sub: "restore path ready" },
-  { time: "10:58:51 AM", message: "Topology sync refreshed for compute inventory.", sub: "live summary updated" },
+const statusSummary = [
+  ["Active Workflows", "7"],
+  ["Queued Tasks", "3"],
+  ["Completed (24h)", "124"],
+  ["Failed (24h)", "0"],
 ];
 
-const statsEl = document.getElementById("summary-stats");
-const topologyEl = document.getElementById("topology-columns");
-const opsEl = document.getElementById("recent-ops");
-const workloadEl = document.getElementById("workload-chart");
-const inventoryEl = document.getElementById("inventory-table");
-const logEl = document.getElementById("automation-log");
+const statsGrid = document.getElementById("stats-grid");
+const coreMetricsEl = document.getElementById("core-metrics");
+const topologyRowsEl = document.getElementById("topology-rows");
+const healthListEl = document.getElementById("health-list");
+const opsListEl = document.getElementById("ops-list");
+const tenantListEl = document.getElementById("tenant-list");
+const backupBreakdownEl = document.getElementById("backup-breakdown");
+const inventoryListEl = document.getElementById("inventory-list");
+const statusSummaryEl = document.getElementById("status-summary");
 
-statsEl.innerHTML = stats
+statsGrid.innerHTML = stats
   .map(
     (stat) => `
     <article class="stat-card ${stat.color}">
-      <div class="stat-label">${stat.label}</div>
+      <div class="stat-head">
+        <span class="stat-label">${stat.label}</span>
+        <span class="stat-icon">${stat.icon}</span>
+      </div>
       <div class="stat-value">${stat.value}</div>
-      <div class="stat-meta">${stat.meta}</div>
+      <div class="stat-sub">${stat.sub}</div>
+      <div class="progress-track"><div class="progress-fill fill-${stat.color}" style="width:${stat.width}%"></div></div>
     </article>
   `,
   )
   .join("");
 
-topologyEl.innerHTML = topologyColumns
+coreMetricsEl.innerHTML = coreMetrics
   .map(
-    (column) => `
-    <section class="topology-column ${column.color}">
-      <div class="column-title"><span class="column-icon">${column.icon}</span><span>${column.title}</span></div>
-      <div class="column-body">
-        ${column.rows
+    ([label, value]) => `
+    <article class="metric-item">
+      <div class="metric-row">
+        <span>${label}</span>
+        <strong>${value}</strong>
+      </div>
+    </article>
+  `,
+  )
+  .join("");
+
+topologyRowsEl.innerHTML = topologyRows
+  .map(
+    (row) => `
+    <div class="topology-row">
+      <div class="topology-label ${row.color}"><span>${row.icon}</span><span>${row.label}</span></div>
+      <div class="topology-track ${row.color}">
+        ${row.nodes
           .map(
-            (row) => `
-            <div class="node-row">
-              ${row
-                .map(
-                  (node, index) => `
-                  ${index > 0 ? '<span class="node-connector">→</span>' : ""}
-                  <article class="node-card ${row.length === 1 ? "wide" : "compact"}">
-                    <div class="node-name">${node.name}</div>
-                    <div class="node-role">${node.role}</div>
-                    <div class="node-note">${node.note}</div>
-                  </article>
-                `,
-                )
-                .join("")}
-            </div>
+            (node, index) => `
+            ${index > 0 ? '<span class="topology-arrow">→</span>' : ""}
+            <article class="topology-node ${node.primary ? "primary" : ""}">
+              <div class="topology-node-name">${node.name}</div>
+              <div class="topology-node-role">${node.role}</div>
+            </article>
           `,
           )
           .join("")}
       </div>
-    </section>
-  `,
-  )
-  .join("");
-
-opsEl.innerHTML = operations
-  .map(
-    (item) => `
-    <article class="ops-item">
-      <div class="item-top">
-        <div class="item-title">${item.title}</div>
-        <div class="item-time">${item.time}</div>
-      </div>
-      <div class="item-sub">${item.sub}</div>
-    </article>
-  `,
-  )
-  .join("");
-
-workloadEl.innerHTML = workloads
-  .map(
-    (item) => `
-    <div class="workload-row">
-      <div class="workload-meta"><span>${item.name}</span><span>${item.value}</span></div>
-      <div class="workload-track"><div class="workload-bar" style="width:${item.value}%"></div></div>
     </div>
   `,
   )
   .join("");
 
-inventoryEl.innerHTML = inventory
+healthListEl.innerHTML = healthItems
   .map(
-    (item) => `
-    <tr>
-      <td>${item.name}</td>
-      <td>${item.type}</td>
-      <td>${item.storage}</td>
-      <td class="${item.className}">${item.stats}</td>
-    </tr>
+    ([label, value]) => `
+    <article class="health-item">
+      <div class="health-row">
+        <span>${label}</span>
+        <strong>${value}</strong>
+      </div>
+    </article>
   `,
   )
   .join("");
 
-logEl.innerHTML = automationLog
+opsListEl.innerHTML = operations
   .map(
-    (item) => `
-    <article class="log-item">
-      <div class="log-top">
-        <span class="log-dot"></span>
-        <span class="log-time">${item.time}</span>
+    ([title, time, result]) => `
+    <article class="ops-item">
+      <div class="ops-row">
+        <strong>${title}</strong>
+        <span>${time}</span>
       </div>
-      <div class="item-title">${item.message}</div>
-      <div class="log-sub">${item.sub}</div>
+      <div class="ops-meta">${result}</div>
+    </article>
+  `,
+  )
+  .join("");
+
+tenantListEl.innerHTML = tenants
+  .map(
+    ([name, desc, vms, containers]) => `
+    <article class="tenant-item">
+      <div class="tenant-row">
+        <strong>${name}</strong>
+        <span class="success-pill">●</span>
+      </div>
+      <div class="tenant-meta">${desc}</div>
+      <div class="tenant-row tenant-meta"><span>${vms}</span><span>${containers}</span></div>
+    </article>
+  `,
+  )
+  .join("");
+
+backupBreakdownEl.innerHTML = backupBreakdown
+  .map(
+    ([label, value]) => `
+    <article class="backup-item">
+      <div class="backup-row">
+        <span>${label}</span>
+        <strong>${value}</strong>
+      </div>
+    </article>
+  `,
+  )
+  .join("");
+
+inventoryListEl.innerHTML = inventory
+  .map(
+    ([label, value, state]) => `
+    <article class="inventory-item">
+      <div class="inventory-row">
+        <span>${label}</span>
+        <strong>${value}</strong>
+      </div>
+      <div class="tenant-meta ${state === "Online" || state === "Running" || state === "Allocated" ? "success-pill" : "warning-pill"}">${state}</div>
+    </article>
+  `,
+  )
+  .join("");
+
+statusSummaryEl.innerHTML = statusSummary
+  .map(
+    ([label, value]) => `
+    <article class="summary-item">
+      <div class="summary-row">
+        <span>${label}</span>
+        <strong>${value}</strong>
+      </div>
     </article>
   `,
   )
