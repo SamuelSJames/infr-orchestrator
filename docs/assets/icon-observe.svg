@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="title-observe">
+ <title id="title-observe">Observability Operations icon</title>
+ <defs>
+ <linearGradient id="obg" x1="12" y1="12" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+ <stop offset="0" stop-color="#78F2FF"/>
+ <stop offset="1" stop-color="#2AC6E6"/>
+ </linearGradient>
+ </defs>
+ <rect x="8" y="8" width="48" height="48" rx="14" fill="#0B1220" stroke="#154A52"/>
+ <path d="M18 40h28" stroke="#1A3140" stroke-width="2"/>
+ <path d="M18 40c4-1 6-12 10-12 3 0 4 8 7 8 3 0 4-5 6-5 2 0 3 4 5 4" fill="none" stroke="url(#obg)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+ <circle cx="46" cy="25" r="7" fill="none" stroke="#7DE8FF" stroke-width="2.4"/>
+ <path d="M51 30l4 4" stroke="#7DE8FF" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

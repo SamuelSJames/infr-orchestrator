@@ -32,6 +32,7 @@ This repo currently ships as a **static dashboard starter** that can be cloned, 
 - full-width dashboard shell
 - KPI/stat overview cards
 - colored topology lanes for major platform layers
+- custom SVG branding and infrastructure icon pack
 - Claw automation core panel
 - system health panel
 - recent operations feed
@@ -71,7 +72,16 @@ infr-orchestrator/
 │   ├── SETUP.md
 │   ├── ARCHITECTURE.md
 │   └── assets/
-│       └── favicon.svg
+│       ├── favicon.svg
+│       ├── logo.svg
+│       ├── claw-core.svg
+│       ├── icon-edge.svg
+│       ├── icon-identity.svg
+│       ├── icon-compute.svg
+│       ├── icon-storage.svg
+│       ├── icon-observe.svg
+│       ├── stat-nodes.svg
+│       └── stat-workloads.svg
 ```
 
 ## Requirements

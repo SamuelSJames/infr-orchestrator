@@ -1,6 +1,22 @@
 const stats = [
-  { label: "Nodes Online", value: "12 / 14", sub: "85.7%", color: "blue", icon: "🟢", width: 86 },
-  { label: "Protected Workloads", value: "48", sub: "Healthy", color: "purple", icon: "🛡️", width: 92 },
+  {
+    label: "Nodes Online",
+    value: "12 / 14",
+    sub: "85.7%",
+    color: "blue",
+    iconPath: "./assets/stat-nodes.svg",
+    iconAlt: "Nodes online",
+    width: 86,
+  },
+  {
+    label: "Protected Workloads",
+    value: "48",
+    sub: "Healthy",
+    color: "purple",
+    iconPath: "./assets/stat-workloads.svg",
+    iconAlt: "Protected workloads",
+    width: 92,
+  },
   { label: "Backup Health", value: "100%", sub: "All Good", color: "green", icon: "💾", width: 100 },
   { label: "Active Projects", value: "8", sub: "+1 this week", color: "amber", icon: "✨", width: 74 },
   { label: "Automation Runs", value: "127", sub: "Last 24h", color: "cyan", icon: "🤖", width: 88 },
@@ -20,7 +36,8 @@ const topologyRows = [
   {
     label: "Edge / Access",
     color: "blue",
-    icon: "🌐",
+    iconPath: "./assets/icon-edge.svg",
+    iconAlt: "Edge access",
     nodes: [
       { name: "edge-gateway-1", role: "HAProxy / NGINX" },
       { name: "edge-firewall", role: "OPNsense" },
@@ -31,7 +48,8 @@ const topologyRows = [
   {
     label: "Identity / Control Plane",
     color: "purple",
-    icon: "🛡️",
+    iconPath: "./assets/icon-identity.svg",
+    iconAlt: "Identity control plane",
     nodes: [
       { name: "auth-core", role: "Keycloak" },
       { name: "claw-core", role: "Claw Automation Core (VPS Control Node)", primary: true },
@@ -42,7 +60,8 @@ const topologyRows = [
   {
     label: "Compute Fabric",
     color: "green",
-    icon: "🖥️",
+    iconPath: "./assets/icon-compute.svg",
+    iconAlt: "Compute fabric",
     nodes: [
       { name: "pve-a", role: "Proxmox Node" },
       { name: "pve-b", role: "Proxmox Node" },
@@ -54,7 +73,8 @@ const topologyRows = [
   {
     label: "Storage / Backup",
     color: "amber",
-    icon: "🗄️",
+    iconPath: "./assets/icon-storage.svg",
+    iconAlt: "Storage and backup",
     nodes: [
       { name: "ceph-storage", role: "Ceph Cluster" },
       { name: "nfs-core", role: "NFS / SMB" },
@@ -65,7 +85,8 @@ const topologyRows = [
   {
     label: "Observability / Operations",
     color: "cyan",
-    icon: "📊",
+    iconPath: "./assets/icon-observe.svg",
+    iconAlt: "Observability and operations",
     nodes: [
       { name: "metrics-core", role: "Prometheus" },
       { name: "logs-core", role: "Loki" },
@@ -140,7 +161,7 @@ statsGrid.innerHTML = stats
     <article class="stat-card ${stat.color}">
       <div class="stat-head">
         <span class="stat-label">${stat.label}</span>
-        <span class="stat-icon">${stat.icon}</span>
+        <span class="stat-icon">${stat.iconPath ? `<img src="${stat.iconPath}" alt="${stat.iconAlt}" />` : stat.icon}</span>
       </div>
       <div class="stat-value">${stat.value}</div>
       <div class="stat-sub">${stat.sub}</div>
@@ -167,7 +188,10 @@ topologyRowsEl.innerHTML = topologyRows
   .map(
     (row) => `
     <div class="topology-row">
-      <div class="topology-label ${row.color}"><span>${row.icon}</span><span>${row.label}</span></div>
+      <div class="topology-label ${row.color}">
+        <span class="topology-label-icon">${row.iconPath ? `<img src="${row.iconPath}" alt="${row.iconAlt}" />` : row.icon}</span>
+        <span>${row.label}</span>
+      </div>
       <div class="topology-track ${row.color}">
         ${row.nodes
           .map(
