@@ -42,11 +42,15 @@ function renderOperations() {
 
 /* ── Log Stream ── */
 const logStream = $("log-stream");
-const logs = D.logs || [];
+const allLogs = D.logs || [];
+const logSearch = document.querySelector(".log-search");
+const nodeFilter = $("filter-node");
+const sevFilter = $("filter-severity");
+const serviceFilter = $("filter-service");
+let autoScroll = true;
 
 // Populate node filter
-const nodeFilter = $("filter-node");
-const uniqueNodes = [...new Set(logs.map((l) => l.node))].sort();
+const uniqueNodes = [...new Set(allLogs.map((l) => l.node))].sort();
 uniqueNodes.forEach((n) => {
   const opt = document.createElement("option");
   opt.textContent = n;
@@ -54,16 +58,38 @@ uniqueNodes.forEach((n) => {
 });
 
 // Populate service filter
-const serviceFilter = $("filter-service");
-const uniqueServices = [...new Set(logs.map((l) => l.service))].sort();
+const uniqueServices = [...new Set(allLogs.map((l) => l.service))].sort();
 uniqueServices.forEach((s) => {
   const opt = document.createElement("option");
   opt.textContent = s;
   serviceFilter.appendChild(opt);
 });
 
+function getFilteredLogs() {
+  const search = (logSearch.value || "").toLowerCase();
+  const node = nodeFilter.value;
+  const sev = sevFilter.value;
+  const service = serviceFilter.value;
+
+  return allLogs.filter((l) => {
+    if (node !== "All Nodes" && l.node !== node) return false;
+    if (sev !== "All Severity" && l.severity.toLowerCase() !== sev.toLowerCase()) return false;
+    if (service !== "All Services" && l.service !== service) return false;
+    if (search) {
+      const haystack = `${l.node} ${l.service} ${l.message} ${l.severity}`.toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
+    return true;
+  });
+}
+
 function renderLogs() {
-  logStream.innerHTML = logs
+  const filtered = getFilteredLogs();
+  if (filtered.length === 0) {
+    logStream.innerHTML = '<div class="log-entry"><span class="log-msg" style="grid-column:1/-1;color:var(--text-muted);">No logs match the current filters.</span></div>';
+    return;
+  }
+  logStream.innerHTML = filtered
     .map(
       (l) => `
     <div class="log-entry">
@@ -75,7 +101,37 @@ function renderLogs() {
     </div>`
     )
     .join("");
+  if (autoScroll) logStream.scrollTop = logStream.scrollHeight;
 }
+
+// Wire up filter events
+logSearch.addEventListener("input", renderLogs);
+nodeFilter.addEventListener("change", renderLogs);
+sevFilter.addEventListener("change", renderLogs);
+serviceFilter.addEventListener("change", renderLogs);
+
+// Auto-scroll toggle
+const toggleThumb = document.querySelector(".log-toggle-thumb");
+const toggleTrack = document.querySelector(".log-toggle-track");
+if (toggleTrack) {
+  toggleTrack.addEventListener("click", () => {
+    autoScroll = !autoScroll;
+    toggleThumb.classList.toggle("active", autoScroll);
+  });
+}
+
+// Pause button
+const pauseBtn = document.querySelector(".log-btn");
+if (pauseBtn) {
+  let paused = false;
+  pauseBtn.addEventListener("click", () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? "Resume" : "Pause";
+    autoScroll = !paused;
+    toggleThumb.classList.toggle("active", autoScroll);
+  });
+}
+
 renderLogs();
 
 /* ── Task History ── */
