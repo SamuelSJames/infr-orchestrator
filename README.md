@@ -1,256 +1,205 @@
 # Infr-Orchestrator
 
-A Proxmox-based infrastructure dashboard for private-cloud style operations, automation visibility, and tenant-ready homelab environments.
+A Proxmox-based infrastructure monitoring dashboard with live data collection, topology mapping, backup posture tracking, and operations visibility.
 
-**Live preview:** <https://samuelsjames.github.io/infr-orchestrator/>
+![Overview Dashboard](./docs/assets/overview.png)
 
-## What this project is
+![Operations Console](./docs/assets/operations.png)
 
-Infr-Orchestrator is an open-source dashboard project designed to present a modern operations view for a Proxmox-driven infrastructure stack.
+## What This Is
 
-It is built to showcase and support:
+Infr-Orchestrator is an open-source dashboard that gives you a single-pane view of your Proxmox homelab or private cloud. It collects data from your nodes using standard Linux CLI tools over SSH — no agents to install on your infrastructure.
 
-- Proxmox infrastructure visibility
-- automation-first operations
-- backup and recovery posture
-- private-cloud style topology mapping
-- tenant and project segmentation concepts
-- a clean, recruiter-friendly infrastructure UI
+It ships with:
+- A static frontend that works out of the box with sample data
+- A Python backend collector that polls your real infrastructure
+- An operations console with live log streaming, task history, and security monitoring
 
-This repo currently ships as a **static dashboard starter** that can be cloned, customized, and deployed quickly. It is intentionally lightweight, easy to host, and easy to adapt to a real Proxmox environment.
+## Features
 
-## Core goals
+### Overview Dashboard
+- KPI cards: nodes online, VMs running, containers, backup health, network latency, active alerts
+- Infrastructure topology map with 5 color-coded lanes (Edge, Identity, Compute, Storage, Observability)
+- Live status dots on every node (up/down/degraded)
+- System health ring with subsystem checklist
+- Recent operations feed
+- Workload group / tenant breakdown
+- Backup posture with success/fail/warning breakdown
+- Compute inventory (nodes, VMs, CTs, vCPUs, memory, storage)
+- Automation workflow summary with success rate
 
-- make infrastructure readable at a glance
-- expose the most important operational signals first
-- provide a polished open-source dashboard starter
-- give homelab builders a clean foundation for a private-cloud control plane
-- serve as a strong portfolio and recruiter-facing project
+### Operations Console
+- Live infrastructure log stream with severity filtering
+- Filter by node, severity, service, and time range
+- Proxmox task history table with status pills
+- Scheduled automation jobs with exit codes and error details
+- Security panel: recent logins, failed attempts, fail2ban bans
+- Node status strip with CPU/MEM/DISK bars per node
 
-## Current features
+## Quick Start
 
-- full-width dashboard shell
-- KPI/stat overview cards
-- colored topology lanes for major platform layers
-- custom SVG branding and infrastructure icon pack
-- Claw automation core panel
-- system health panel
-- recent operations feed
-- tenant/project workload section
-- backup posture section
-- compute inventory section
-- automation status section
-- GitHub Pages-ready static deployment
-
-## Open-source tools and ecosystem
-
-This project is inspired by workflows commonly built around:
-
-- **Proxmox VE** for virtualization
-- **Proxmox Backup Server** for backup and restore posture
-- **Grafana** for observability and dashboards
-- **Prometheus** for metrics
-- **Loki** for logs
-- **Keycloak** or **Authentik** for identity
-- **MinIO** for object storage
-- **Traefik**, **HAProxy**, or **Nginx** for edge routing
-- **NetBird**, **Tailscale**, or WireGuard-style overlays for remote access
-- **Ansible**, **Terraform**, or GitOps workflows for automation
-
-The current repo is UI-first, but it is structured to grow into a fuller open-source platform dashboard.
-
-## Project structure
-
-```text
-infr-orchestrator/
-├── README.md
-├── CONTRIBUTING.md
-├── LICENSE
-├── Dockerfile
-├── index.html
-├── deploy/
-│   ├── Caddyfile.example
-│   └── nginx.conf.example
-├── docs/
-│   ├── index.html
-│   ├── styles.css
-│   ├── data.js
-│   ├── app.js
-│   ├── SETUP.md
-│   ├── DEPLOYMENT.md
-│   ├── DEVELOPMENT.md
-│   ├── INTEGRATIONS.md
-│   ├── ARCHITECTURE.md
-│   └── assets/
-│       ├── favicon.svg
-│       ├── logo.svg
-│       ├── claw-core.svg
-│       ├── icon-edge.svg
-│       ├── icon-identity.svg
-│       ├── icon-compute.svg
-│       ├── icon-storage.svg
-│       ├── icon-observe.svg
-│       ├── stat-nodes.svg
-│       └── stat-workloads.svg
-```
-
-## Requirements
-
-### Minimum requirements to run the dashboard
-
-You only need a system capable of serving static files:
-
-- Git
-- Python 3 **or** any static web server
-- a browser
-
-### Requirements to adapt it to a Proxmox environment
-
-To make this dashboard reflect a real environment, you will typically want:
-
-- one or more **Proxmox VE** nodes
-- optional **Proxmox Backup Server**
-- a documented inventory of:
-  - nodes
-  - VM groups
-  - LXC groups
-  - storage tiers
-  - tenant/project segments
-  - automation roles
-- a naming convention for:
-  - edge systems
-  - control-plane services
-  - compute nodes
-  - storage services
-  - observability services
-
-## Quick start
+### Option 1: Static Demo (no backend needed)
 
 ```bash
-git clone https://github.com/SamuelSJames/infr-orchestrator.git
-cd infr-orchestrator
+git clone https://github.com/SamuelSJames/Infr-Orchestrator.git
+cd Infr-Orchestrator
 python3 -m http.server 8080
 ```
 
-Then open either:
+Open `http://127.0.0.1:8080/docs/` — you'll see the dashboard with sample data.
 
-- <http://127.0.0.1:8080/>
-- <http://127.0.0.1:8080/docs/>
+### Option 2: Live Data (with collector backend)
 
-## Deployment options
+1. Create a small LXC on your Proxmox cluster (Debian/Ubuntu, 512MB RAM, 4GB disk)
 
-### 1. GitHub Pages
-This repo already supports GitHub Pages from the `docs/` directory.
+2. Clone the repo and run the setup script:
+```bash
+git clone https://github.com/SamuelSJames/Infr-Orchestrator.git
+cd Infr-Orchestrator/collector
+bash setup.sh
+```
 
-### 2. Nginx
-Copy the repo to a server, point Nginx at `docs/`, and use `deploy/nginx.conf.example` as a starting point.
+3. Copy your SSH public key to each Proxmox node:
+```bash
+ssh-copy-id root@<pve-node-ip>
+```
 
-### 3. Caddy
-Serve `docs/` as a static site and use `deploy/Caddyfile.example` as a starting point.
+4. Edit the config:
+```bash
+cp config.yaml.example config.yaml
+nano config.yaml
+```
 
-### 4. Docker + static web server
-A minimal `Dockerfile` is included for portable static deployment.
+5. Start the collector:
+```bash
+source /opt/infr-collector/venv/bin/activate
+python app.py
+```
 
-## How to customize for your own Proxmox environment
+Dashboard available at `http://<collector-ip>:8081`
 
-Right now the dashboard data is stored in:
+## Project Structure
 
-- `docs/data.js`
+```
+Infr-Orchestrator/
+├── README.md
+├── LICENSE
+├── Dockerfile
+├── index.html                    # Redirect to docs/
+├── docs/                         # Frontend (static dashboard)
+│   ├── index.html                # Overview dashboard
+│   ├── operations.html           # Operations console
+│   ├── styles.css                # Shared styles
+│   ├── operations.css            # Operations page styles
+│   ├── app.js                    # Overview renderer
+│   ├── data.js                   # Sample data (overview)
+│   ├── operations-app.js         # Operations renderer
+│   ├── operations-data.js        # Sample data (operations)
+│   ├── FEATURES.md               # Complete feature list
+│   ├── MANDATORY-TOOLS.md        # Required tools per panel
+│   └── assets/
+│       ├── icons/                # 26 SVG icons (brand + UI)
+│       ├── logo.svg              # Dashboard logo
+│       ├── favicon.svg           # Browser tab icon
+│       ├── overview.png          # Screenshot
+│       └── operations.png        # Screenshot
+├── collector/                    # Backend (Python data collector)
+│   ├── app.py                    # Flask API server + poll loop
+│   ├── config.yaml.example       # Example configuration
+│   ├── requirements.txt          # Python dependencies
+│   ├── setup.sh                  # One-command installer
+│   └── collectors/
+│       ├── ssh.py                # SSH helper (paramiko)
+│       ├── ping.py               # fping → node reachability
+│       ├── proxmox.py            # pvesh → VMs, CTs, storage, tasks
+│       ├── system.py             # vmstat/free/df → CPU/MEM/DISK
+│       ├── backup.py             # vzdump tasks → backup posture
+│       ├── logs.py               # journalctl → log stream
+│       └── security.py           # last/lastb/fail2ban → security
+├── scripts/
+│   ├── fetch-icons.sh            # Download missing icons (Linux)
+│   └── fetch-icons.ps1           # Download missing icons (Windows)
+└── deploy/
+    ├── nginx.conf.example
+    └── Caddyfile.example
+```
 
-To adapt the dashboard to your own environment, update the data structures for:
+## How It Works
 
-- stats
-- topology rows
-- system health
-- operations feed
-- tenant/project sections
-- backup posture
-- compute inventory
-- automation summary
+```
+┌─────────────────────────────────────────┐
+│  Proxmox Cluster                        │
+│                                         │
+│  ┌──────────────┐   ┌──────────────┐    │
+│  │  pve-node-1  │   │  pve-node-2  │    │
+│  │  (VMs/LXCs)  │   │  (VMs/LXCs)  │    │
+│  └──────┬───────┘   └──────┬───────┘    │
+│         │    SSH + CLI     │            │
+│         └────────┬─────────┘            │
+│           ┌──────┴───────┐              │
+│           │infr-collector│              │
+│           │  (LXC)       │              │
+│           │  Python API  │              │
+│           │  fping, SSH  │              │
+│           └──────┬───────┘              │
+└──────────────────┼──────────────────────┘
+                   │ REST API
+            ┌──────┴───────┐
+            │  Dashboard   │
+            │  (browser)   │
+            └──────────────┘
+```
 
-This makes the project easy to fork and personalize without needing a backend first.
+The collector LXC is the only component that talks to your infrastructure. It SSHs into each node, runs CLI tools (pvesh, fping, vmstat, df, journalctl, last), normalizes the output to JSON, and serves it via a REST API. The dashboard frontend fetches from the API and renders everything.
 
-## Recommended rollout path for real homelab adoption
+## API Endpoints
 
-### Phase 1, static customization
-- replace labels and system names
-- align topology rows to your real architecture
-- replace sample metrics with your real categories
-- change colors and icons to match your branding
+| Endpoint | Returns |
+|---|---|
+| `/api/dashboard` | Full overview payload |
+| `/api/stats` | KPI card values |
+| `/api/topology` | Topology map with live node status |
+| `/api/health` | System health checklist |
+| `/api/operations` | Recent operations feed |
+| `/api/inventory` | Compute inventory |
+| `/api/backup` | Backup posture breakdown |
+| `/api/logs` | Infrastructure log stream |
+| `/api/security` | Logins and security alerts |
+| `/api/nodes` | Node status (CPU/MEM/DISK bars) |
+| `/api/status` | Collector health check |
 
-### Phase 2, generated data
-- export data from Proxmox API
-- build a script that writes dashboard JSON or JS data
-- generate `docs/data.js` or a separate data file from your inventory
+## Required Tools
 
-### Phase 3, live platform
-- add a backend API
-- connect to Proxmox API
-- add authentication
-- expose real node, VM, LXC, storage, and backup status
-- wire in alerts and logs
+The collector needs only two packages installed beyond what's already on a Debian/Ubuntu system:
 
-## Tips for making it production-worthy
+| Package | Install |
+|---|---|
+| `fping` | `apt install fping` |
+| `sysstat` | `apt install sysstat` |
 
-- keep naming clean and consistent
-- define your platform layers clearly
-- do not mix infrastructure names with personal nicknames in the UI
-- separate edge, control plane, compute, storage, and observability visually
-- use backups and restore posture as first-class dashboard signals
-- avoid overcrowding the first screen with low-value metrics
-- decide early whether the dashboard is read-only or operational
-- if you add actions later, gate them through auth, audit, and role checks
+Everything else (`pvesh`, `vmstat`, `free`, `df`, `journalctl`, `last`) is pre-installed on Proxmox and standard Linux.
 
-## Recommended open-source stack if you expand this
+See [MANDATORY-TOOLS.md](./docs/MANDATORY-TOOLS.md) for the full breakdown of which tools feed which dashboard panels.
 
-### Infrastructure layer
-- Proxmox VE
-- Proxmox Backup Server
-- ZFS
+## Customization
 
-### Identity
-- Keycloak or Authentik
+All dashboard data lives in `docs/data.js` (overview) and `docs/operations-data.js` (operations console). Edit these files to match your environment for the static demo, or connect the backend collector for live data.
 
-### Networking and ingress
-- HAProxy
-- Traefik
-- Nginx
-- Cloudflare DNS
+The topology map is configured in `collector/config.yaml` — define your nodes, their roles, and which topology lane they belong to.
 
-### Storage
-- MinIO
-- NFS / SMB
-- Ceph, if your hardware and networking can support it
+## Deployment
 
-### Observability
-- Grafana
-- Prometheus
-- Loki
-- Tempo
-- Uptime Kuma
+### GitHub Pages
+This repo supports GitHub Pages from the `docs/` directory for the static demo.
 
-### Automation
-- Ansible
-- Terraform
-- GitHub Actions / Forgejo Actions
-- internal schedulers and agent-driven workflows
+### Docker
+```bash
+docker build -t infr-orchestrator .
+docker run --rm -p 8080:80 infr-orchestrator
+```
 
-## Documentation
-
-- [Setup Guide](./docs/SETUP.md)
-- [Deployment Guide](./docs/DEPLOYMENT.md)
-- [Development Guide](./docs/DEVELOPMENT.md)
-- [Integration Guide](./docs/INTEGRATIONS.md)
-- [Architecture Guide](./docs/ARCHITECTURE.md)
-- [Contributing Guide](./CONTRIBUTING.md)
-
-## Roadmap
-
-- add generated inventory workflow
-- add optional live Proxmox API integration path
-- add PBS, Grafana, and Uptime Kuma adapter examples
-- add schema validation for generated data
-- add role-aware operator actions
+### Nginx / Caddy
+Example configs in `deploy/`.
 
 ## License
 

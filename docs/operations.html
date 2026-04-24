@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Operations Console — Infr-Orchestrator</title>
+  <meta name="description" content="Infrastructure operations console — live logs, task history, automation runs, and security activity." />
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./operations.css" />
+</head>
+<body>
+  <div class="shell">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="brand">
+        <img src="./assets/logo.svg" alt="Infr-Orchestrator" class="brand-logo" />
+        <div>
+          <h1>Infr-Orchestrator</h1>
+          <p class="brand-sub">Infrastructure Monitoring</p>
+        </div>
+      </div>
+      <nav class="topnav">
+        <a class="nav-pill" href="./index.html">Overview</a>
+        <a class="nav-pill" href="#topology">Topology</a>
+        <a class="nav-pill" href="#compute">Compute</a>
+        <a class="nav-pill" href="#storage">Storage</a>
+        <a class="nav-pill" href="#backup">Backup</a>
+        <a class="nav-pill" href="#network">Network</a>
+        <a class="nav-pill active" href="./operations.html">Automation</a>
+        <a class="nav-pill" href="#alerts">Alerts</a>
+      </nav>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <div>
+          <strong>All Systems Operational</strong>
+          <span>Last poll: 30s ago</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="./index.html">← Back to Overview</a>
+    </div>
+
+    <!-- Live Log Stream -->
+    <section class="panel log-panel">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Live Log Stream</p>
+          <h3 class="panel-title">Infrastructure Logs</h3>
+        </div>
+      </div>
+      <div class="log-filters">
+        <input type="text" class="log-search" placeholder="Search logs..." />
+        <select class="log-select" id="filter-node">
+          <option>All Nodes</option>
+        </select>
+        <select class="log-select" id="filter-severity">
+          <option>All Severity</option>
+          <option>Info</option>
+          <option>Warning</option>
+          <option>Error</option>
+        </select>
+        <select class="log-select" id="filter-service">
+          <option>All Services</option>
+        </select>
+        <select class="log-select">
+          <option>Last 1 hour</option>
+          <option>Last 6 hours</option>
+          <option>Last 24 hours</option>
+        </select>
+        <span class="log-toggle">
+          <span class="log-toggle-label">Auto-scroll</span>
+          <span class="log-toggle-track"><span class="log-toggle-thumb active"></span></span>
+        </span>
+        <button class="log-btn">Pause</button>
+      </div>
+      <div class="log-stream" id="log-stream"></div>
+    </section>
+
+    <!-- Three-column detail grid -->
+    <section class="detail-grid">
+
+      <!-- Task History -->
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Task History</p>
+            <h3 class="panel-title">Proxmox Operations</h3>
+          </div>
+          <span class="sort-controls">Sort by: <a href="#" class="sort-link active">Time</a> | <a href="#" class="sort-link">Status</a> | <a href="#" class="sort-link">Node</a></span>
+        </div>
+        <div class="task-table">
+          <div class="task-header">
+            <span>Task</span>
+            <span>Node</span>
+            <span>Duration</span>
+            <span>Status</span>
+          </div>
+          <div class="task-list" id="task-list"></div>
+        </div>
+      </article>
+
+      <!-- Automation Runs -->
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Automation Runs</p>
+            <h3 class="panel-title">Scheduled Jobs</h3>
+          </div>
+        </div>
+        <div class="job-table">
+          <div class="job-header">
+            <span>Job Name</span>
+            <span>Schedule</span>
+            <span>Last Run</span>
+            <span>Duration</span>
+            <span>Exit Code</span>
+            <span></span>
+          </div>
+          <div class="job-list" id="job-list"></div>
+        </div>
+      </article>
+
+      <!-- Security & Access -->
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Security &amp; Access</p>
+            <h3 class="panel-title">Login Activity</h3>
+          </div>
+        </div>
+        <div class="security-section">
+          <h4 class="section-label">Recent Logins</h4>
+          <div class="login-list" id="login-list"></div>
+        </div>
+        <div class="security-section">
+          <h4 class="section-label">Security Alerts</h4>
+          <div class="alert-list" id="alert-list"></div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Node Status Strip -->
+    <section class="panel node-strip-panel">
+      <p class="eyebrow">Node Status</p>
+      <div class="node-strip" id="node-strip"></div>
+    </section>
+
+  </div>
+
+  <script src="./operations-data.js"></script>
+  <script src="./operations-app.js"></script>
+</body>
+</html>

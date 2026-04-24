@@ -1,0 +1,98 @@
+# Infr-Orchestrator Collector Configuration
+# Copy this file to config.yaml and edit for your environment.
+
+# API server settings
+api:
+  host: "0.0.0.0"
+  port: 8081
+  # How often to poll all nodes (seconds)
+  poll_interval: 60
+
+# SSH settings (used for agentless collection)
+ssh:
+  user: "root"
+  key_path: "~/.ssh/id_rsa"
+  timeout: 10
+
+# Proxmox nodes to monitor
+nodes:
+  - name: "pve-node-1"
+    host: "192.168.1.100"
+    type: "proxmox"
+    role: "Proxmox Node"
+    layer: "compute"
+
+  - name: "pve-node-2"
+    host: "192.168.1.101"
+    type: "proxmox"
+    role: "Proxmox Node"
+    layer: "compute"
+
+# Additional infrastructure nodes
+infrastructure:
+  - name: "edge-proxy"
+    host: "192.168.1.10"
+    type: "linux"
+    role: "Reverse Proxy"
+    layer: "edge"
+    checks:
+      - type: "ping"
+      - type: "port"
+        port: 443
+
+  - name: "backup-server"
+    host: "192.168.1.50"
+    type: "pbs"
+    role: "Proxmox Backup"
+    layer: "storage"
+    checks:
+      - type: "ping"
+      - type: "port"
+        port: 8007
+
+  - name: "infr-collector"
+    host: "127.0.0.1"
+    type: "linux"
+    role: "Dashboard Collector"
+    layer: "identity"
+
+# Topology layout — maps nodes to dashboard lanes
+topology:
+  - label: "Edge / Access"
+    color: "blue"
+    icon: "globe"
+    nodes: ["edge-proxy"]
+
+  - label: "Identity / Control"
+    color: "purple"
+    icon: "key"
+    nodes: ["infr-collector"]
+
+  - label: "Compute"
+    color: "green"
+    icon: "cpu"
+    nodes: ["pve-node-1", "pve-node-2"]
+
+  - label: "Storage / Backup"
+    color: "amber"
+    icon: "hard-drive"
+    nodes: ["backup-server"]
+
+  - label: "Observability"
+    color: "cyan"
+    icon: "eye"
+    nodes: ["infr-collector"]
+
+# Tenant/project groupings (map VMs/CTs by Proxmox pool or tag)
+tenants:
+  - name: "Infrastructure"
+    description: "Core platform LXCs and services"
+    match_pool: "infrastructure"
+
+  - name: "Development"
+    description: "CI/CD, staging, and test workloads"
+    match_pool: "development"
+
+  - name: "Personal"
+    description: "Personal projects and experiments"
+    match_pool: "personal"

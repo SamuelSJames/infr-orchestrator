@@ -1,195 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Infr-Orchestrator</title>
-    <meta
-      name="description"
-      content="Proxmox-based infrastructure orchestration, automation-driven operations, and private cloud observability."
-    />
-    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body>
-    <div class="page-shell">
-      <header class="topbar">
-        <div class="brand-lockup">
-          <img src="./assets/logo.svg" alt="Infr-Orchestrator logo" class="brand-icon" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infr-Orchestrator</title>
+  <meta name="description" content="Proxmox-based infrastructure monitoring dashboard — automation, backup posture, and full-stack observability." />
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="shell">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="brand">
+        <img src="./assets/logo.svg" alt="Infr-Orchestrator" class="brand-logo" />
+        <div>
+          <h1>Infr-Orchestrator</h1>
+          <p class="brand-sub">Private Cloud Operations · Proxmox · Automated</p>
+        </div>
+      </div>
+      <nav class="topnav">
+        <a class="nav-pill active" href="#overview">Overview</a>
+        <a class="nav-pill" href="#topology">Topology</a>
+        <a class="nav-pill" href="#compute">Compute</a>
+        <a class="nav-pill" href="#storage">Storage</a>
+        <a class="nav-pill" href="#backup">Backup</a>
+        <a class="nav-pill" href="#network">Network</a>
+        <a class="nav-pill" href="#automation">Automation</a>
+        <a class="nav-pill" href="#alerts">Alerts</a>
+      </nav>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <div>
+          <strong>All Systems Operational</strong>
+          <span>Last poll: 30s ago</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- KPI Strip -->
+    <section class="kpi-strip" id="kpi-strip"></section>
+
+    <!-- Core Grid: Automation | Topology | Health -->
+    <section class="core-grid">
+
+      <!-- Automation Engine -->
+      <article class="panel" id="automation">
+        <div class="panel-header">
           <div>
-            <h1>Infr-Orchestrator</h1>
-            <p class="brand-subtitle">Proxmox-based infrastructure orchestration · automation-driven operations · private cloud platform</p>
+            <p class="eyebrow">Automation Engine</p>
+            <h3 class="panel-title">Collector Core</h3>
+          </div>
+          <span class="chip chip-green" id="auto-status"></span>
+        </div>
+        <div class="auto-brain">
+          <img src="./assets/icons/brain.svg" alt="Automation Core" />
+        </div>
+        <div class="metric-list" id="auto-metrics"></div>
+        <a class="btn-primary" href="./operations.html">View Automation Logs</a>
+      </article>
+
+      <!-- Topology -->
+      <article class="panel" id="topology">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Infrastructure Topology</p>
+            <h3 class="panel-title">Platform Map</h3>
+          </div>
+          <a class="panel-link" href="#">View Full Topology</a>
+        </div>
+        <div class="topo-rows" id="topo-rows"></div>
+      </article>
+
+      <!-- System Health -->
+      <article class="panel" id="health">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">System Health</p>
+            <h3 class="panel-title">Overall Posture</h3>
           </div>
         </div>
-        <nav class="topnav">
-          <a class="nav-pill active" href="#overview">Overview</a>
-          <a class="nav-pill" href="#topology">Topology</a>
-          <a class="nav-pill" href="#compute">Compute</a>
-          <a class="nav-pill" href="#storage">Storage</a>
-          <a class="nav-pill" href="#automation">Automation</a>
-          <a class="nav-pill" href="#tenants">Tenants</a>
-          <a class="nav-pill" href="https://github.com/SamuelSJames/infr-orchestrator" target="_blank" rel="noreferrer">GitHub</a>
-        </nav>
-        <div class="system-status-pill">
-          <span class="status-dot"></span>
+        <div class="health-ring" id="health-ring"></div>
+        <div class="health-list" id="health-list"></div>
+        <div class="health-legend" id="health-legend"></div>
+      </article>
+
+    </section>
+
+    <!-- Lower Grid -->
+    <section class="lower-grid">
+
+      <!-- Recent Operations -->
+      <article class="panel">
+        <div class="panel-header">
           <div>
-            <strong>System Status</strong>
-            <span>All systems operational</span>
+            <p class="eyebrow">Recent Operations</p>
+            <h3 class="panel-title">Event Feed</h3>
           </div>
+          <a class="panel-link" href="#">View All</a>
         </div>
-      </header>
+        <div class="ops-list" id="ops-list"></div>
+      </article>
 
-      <main>
-        <section class="overview-grid" id="overview">
-          <article class="hero-panel panel">
-            <div class="hero-glow"></div>
-            <p class="eyebrow">Infrastructure control plane</p>
-            <h2>Infrastructure. Automated.</h2>
-            <h3>Reliably orchestrated. Always observable.</h3>
-            <p class="hero-copy">
-              Infr-Orchestrator is a Proxmox-powered private cloud platform designed for automation,
-              resilience, tenant isolation, and full-stack observability.
-            </p>
-          </article>
-          <section class="stats-grid" id="stats-grid"></section>
-        </section>
+      <!-- Workload Groups -->
+      <article class="panel" id="tenants">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Workload Groups</p>
+            <h3 class="panel-title">Projects</h3>
+          </div>
+          <a class="panel-link" href="#">View All</a>
+        </div>
+        <div class="tenant-list" id="tenant-list"></div>
+      </article>
 
-        <section class="core-grid">
-          <article class="panel automation-card" id="automation">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">Claw Automation Core</p>
-                <h3>Automation brain</h3>
-              </div>
-              <span class="mini-chip">Running</span>
-            </div>
-            <div class="brain-visual-wrap">
-              <div class="brain-visual">
-                <img src="./assets/claw-core.svg" alt="Claw Core" class="brain-icon" />
-              </div>
-              <div class="brain-copy">
-                <p>
-                  Claw is the automation brain of the platform, running inside a hardened VPS
-                  control node and coordinating operations across the stack.
-                </p>
-              </div>
-            </div>
-            <div class="metric-list" id="core-metrics"></div>
-            <a class="primary-button" href="https://github.com/SamuelSJames/infr-orchestrator" target="_blank" rel="noreferrer">Open Automation Hub</a>
-          </article>
+      <!-- Backup Posture -->
+      <article class="panel" id="backup">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Backup Posture</p>
+            <h3 class="panel-title">Protection State</h3>
+          </div>
+          <a class="panel-link" href="#">View All</a>
+        </div>
+        <div class="backup-ring" id="backup-ring"></div>
+        <div class="backup-list" id="backup-list"></div>
+        <div class="backup-footer" id="backup-footer"></div>
+      </article>
 
-          <article class="panel topology-panel" id="topology">
-            <div class="panel-heading panel-heading-spread">
-              <div>
-                <p class="eyebrow">Infrastructure Topology</p>
-                <h3>Grid-based platform map</h3>
-              </div>
-              <a class="panel-link" href="#">View Full Topology</a>
-            </div>
-            <div class="topology-rows" id="topology-rows"></div>
-          </article>
+      <!-- Compute Inventory -->
+      <article class="panel" id="compute">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Compute Inventory</p>
+            <h3 class="panel-title">PVE Estate</h3>
+          </div>
+          <a class="panel-link" href="#">View All</a>
+        </div>
+        <div class="inv-list" id="inv-list"></div>
+      </article>
 
-          <article class="panel health-panel" id="storage">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">System Health</p>
-                <h3>Overall posture</h3>
-              </div>
-            </div>
-            <div class="health-ring-wrap">
-              <div class="health-ring">
-                <div class="health-ring-inner">
-                  <strong>98%</strong>
-                  <span>Healthy</span>
-                </div>
-              </div>
-            </div>
-            <div class="health-list" id="health-list"></div>
-          </article>
-        </section>
+      <!-- Automation Status -->
+      <article class="panel" id="auto-status-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Automation Status</p>
+            <h3 class="panel-title">Workflow Summary</h3>
+          </div>
+          <a class="panel-link" href="#">View All</a>
+        </div>
+        <div class="auto-list" id="auto-list"></div>
+        <div class="success-bar" id="success-bar"><div class="success-bar-fill"></div></div>
+        <div class="success-label"><span>Success Rate</span><strong id="success-rate"></strong></div>
+      </article>
 
-        <section class="lower-grid">
-          <article class="panel lower-panel">
-            <div class="panel-heading panel-heading-spread">
-              <div>
-                <p class="eyebrow">Recent Operations</p>
-                <h3>Execution feed</h3>
-              </div>
-              <a class="panel-link" href="#">View All</a>
-            </div>
-            <div class="ops-list" id="ops-list"></div>
-          </article>
+    </section>
 
-          <article class="panel lower-panel" id="tenants">
-            <div class="panel-heading panel-heading-spread">
-              <div>
-                <p class="eyebrow">Tenant / Project Spaces</p>
-                <h3>Workload groups</h3>
-              </div>
-              <a class="panel-link" href="#">View All</a>
-            </div>
-            <div class="tenant-list" id="tenant-list"></div>
-          </article>
+  </div>
 
-          <article class="panel lower-panel">
-            <div class="panel-heading panel-heading-spread">
-              <div>
-                <p class="eyebrow">Backup Posture</p>
-                <h3>Protection state</h3>
-              </div>
-              <a class="panel-link" href="#">View All</a>
-            </div>
-            <div class="backup-card-body">
-              <div class="backup-ring">
-                <div class="backup-ring-inner">
-                  <strong>100%</strong>
-                  <span>Protected</span>
-                </div>
-              </div>
-              <div class="backup-breakdown" id="backup-breakdown"></div>
-            </div>
-            <div class="backup-footer">
-              <span>Last Backup (All)</span>
-              <strong>2h ago</strong>
-            </div>
-          </article>
-
-          <article class="panel lower-panel" id="compute">
-            <div class="panel-heading panel-heading-spread">
-              <div>
-                <p class="eyebrow">Compute Inventory</p>
-                <h3>PVE and workload estate</h3>
-              </div>
-              <a class="panel-link" href="#">View All</a>
-            </div>
-            <div class="inventory-list" id="inventory-list"></div>
-          </article>
-
-          <article class="panel lower-panel">
-            <div class="panel-heading panel-heading-spread">
-              <div>
-                <p class="eyebrow">Automation Status</p>
-                <h3>Workflow summary</h3>
-              </div>
-              <a class="panel-link" href="#">View All</a>
-            </div>
-            <div class="status-summary" id="status-summary"></div>
-            <div class="success-bar">
-              <div class="success-bar-fill"></div>
-            </div>
-            <div class="success-label">Success Rate <strong>100%</strong></div>
-          </article>
-        </section>
-      </main>
-    </div>
-
-    <script src="./data.js"></script>
-    <script src="./app.js"></script>
-  </body>
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
 </html>

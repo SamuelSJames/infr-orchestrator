@@ -1,21 +1,15 @@
-<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bg" x1="18" y1="14" x2="108" y2="114" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#75A8FF"/>
-      <stop offset="1" stop-color="#6CF0D4"/>
-    </linearGradient>
-    <linearGradient id="claw" x1="42" y1="34" x2="84" y2="90" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F8FBFF"/>
-      <stop offset="1" stop-color="#D6E3FF"/>
-    </linearGradient>
-  </defs>
-  <rect x="8" y="8" width="112" height="112" rx="28" fill="#091425"/>
-  <rect x="10" y="10" width="108" height="108" rx="26" stroke="url(#bg)" stroke-width="4"/>
-  <path d="M37 36L64 20L91 36V69C91 85 79 99 64 108C49 99 37 85 37 69V36Z" fill="url(#bg)" fill-opacity="0.2" stroke="url(#bg)" stroke-width="4"/>
-  <path d="M47 54C47 46.8203 52.8203 41 60 41H68C75.1797 41 81 46.8203 81 54V58C81 64.6274 75.6274 70 69 70H59C52.3726 70 47 64.6274 47 58V54Z" fill="url(#claw)"/>
-  <path d="M49 78C52 71 58 67 64 67C70 67 76 71 79 78" stroke="url(#claw)" stroke-width="8" stroke-linecap="round"/>
-  <path d="M49 49L43 38" stroke="url(#claw)" stroke-width="7" stroke-linecap="round"/>
-  <path d="M61 44L58 32" stroke="url(#claw)" stroke-width="7" stroke-linecap="round"/>
-  <path d="M74 44L78 32" stroke="url(#claw)" stroke-width="7" stroke-linecap="round"/>
-  <path d="M85 49L92 38" stroke="url(#claw)" stroke-width="7" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <path d="M16 2L28.392 9.25V23.75L16 31L3.608 23.75V9.25L16 2Z" stroke="#4f8dff" stroke-width="1.5" fill="rgba(79,141,255,0.1)"/>
+  <line x1="11" y1="12" x2="16" y2="9" stroke="#4f8dff" stroke-width="1" opacity="0.6"/>
+  <line x1="21" y1="12" x2="16" y2="9" stroke="#4f8dff" stroke-width="1" opacity="0.6"/>
+  <line x1="11" y1="12" x2="11" y2="19" stroke="#4f8dff" stroke-width="1" opacity="0.6"/>
+  <line x1="21" y1="12" x2="21" y2="19" stroke="#4f8dff" stroke-width="1" opacity="0.6"/>
+  <line x1="11" y1="19" x2="16" y2="22" stroke="#4f8dff" stroke-width="1" opacity="0.6"/>
+  <line x1="21" y1="19" x2="16" y2="22" stroke="#4f8dff" stroke-width="1" opacity="0.6"/>
+  <circle cx="16" cy="9" r="2" fill="#4f8dff"/>
+  <circle cx="11" cy="12" r="1.8" fill="#9d5cff"/>
+  <circle cx="21" cy="12" r="1.8" fill="#34d769"/>
+  <circle cx="11" cy="19" r="1.8" fill="#d69f3a"/>
+  <circle cx="21" cy="19" r="1.8" fill="#2bc2d9"/>
+  <circle cx="16" cy="22" r="1.8" fill="#edf3ff"/>
 </svg>
